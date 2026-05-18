@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prism</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="bgCanvas"></canvas>
+    <canvas id="bg2dCanvas"></canvas>
+    <canvas id="particleCanvas"></canvas>
+    <canvas id="specCanvas"></canvas>
+
+    <div id="ui">
+      <div id="logo">PRISM</div>
+      <div id="searchWrap">
+        <input
+          id="search"
+          placeholder="Search for a song or artist"
+          autocomplete="off"
+        />
+        <button id="searchBtn">SEARCH</button>
+      </div>
+      <button id="btnFullscreen" class="icon-btn" title="Fullscreen (F)">
+        ⛶
+      </button>
+      <button id="btnHud" class="icon-btn" title="Toggle HUD (H)">◈</button>
+    </div>
+
+    <div id="results"></div>
+    <div id="errorToast"></div>
+
+    <div id="modeSwitcher">
+      <button id="btnPrev" title="Previous mode (B)">&#8592;</button>
+      <div id="modeDisplay">
+        <div id="modeLabel">PLASMA</div>
+        <div id="modeDots"></div>
+      </div>
+      <button id="btnNext" title="Next mode (V)">&#8594;</button>
+    </div>
+
+    <div id="hud">
+      <div class="hud-meter">
+        <span class="hud-label">BASS</span>
+        <div class="hud-bar-wrap">
+          <div class="hud-bar bass" id="hBass"></div>
+        </div>
+        <span class="hud-val" id="vBass">0</span>
+      </div>
+      <div class="hud-meter">
+        <span class="hud-label">MID</span>
+        <div class="hud-bar-wrap">
+          <div class="hud-bar mid" id="hMid"></div>
+        </div>
+        <span class="hud-val" id="vMid">0</span>
+      </div>
+      <div class="hud-meter">
+        <span class="hud-label">HIGH</span>
+        <div class="hud-bar-wrap">
+          <div class="hud-bar high" id="hHigh"></div>
+        </div>
+        <span class="hud-val" id="vHigh">0</span>
+      </div>
+      <div class="hud-meter hud-bpm">
+        <span class="hud-label">BPM</span>
+        <span class="hud-val" id="bpmVal">—</span>
+      </div>
+    </div>
+
+    <div id="nowPlaying">
+      <div id="npCover-fallback">♪</div>
+      <img id="npCover" src="" alt="" />
+      <div id="npInfo">
+        <div id="npTitle">—</div>
+        <div id="npArtist">—</div>
+      </div>
+    </div>
+
+    <div id="idle">
+      <div id="idle-title">PRISM</div>
+      <div id="idle-sub">Search for a song to begin</div>
+      <div id="idle-hint">
+        V / B — change mode &nbsp;·&nbsp; F — full screen
+      </div>
+    </div>
+
+    <div id="credits">
+      Built by
+      <a href="https://github.com/danieel1araya" target="_blank"
+        >Daniel Araya</a
+      >
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
