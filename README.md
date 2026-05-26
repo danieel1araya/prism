@@ -63,6 +63,12 @@
 ![iTunes API](https://img.shields.io/badge/iTunes%20Search%20API-FA243C?style=flat-square&logo=apple&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
 
+<p align="center">
+  <a href="https://prism-swart-psi.vercel.app/">
+    <img src="https://img.shields.io/badge/%E2%96%B6%20Live%20demo-prism--swart--psi.vercel.app-1D9E75?style=for-the-badge" />
+  </a>
+</p>
+
 ---
 
 
