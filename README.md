@@ -65,8 +65,5 @@
 
 ---
 
-No build step required — pure ES modules. Open `index.html` with any modern browser.
-
----
 
 > Built by [Daniel Araya](https://github.com/danieel1araya)
