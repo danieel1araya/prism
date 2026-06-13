@@ -145,12 +145,24 @@ export class UI {
   btnFull.addEventListener('click', () => this._toggleFullscreen());
   btnHud.addEventListener('click', () => this._toggleHud()); // ← esta línea faltaba
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'v' || e.key === 'V') this._onModeChange(1);
-    if (e.key === 'b' || e.key === 'B') this._onModeChange(-1);
-    if (e.key === 'f' || e.key === 'F') this._toggleFullscreen();
-    if (e.key === 'h' || e.key === 'H') this._toggleHud(); // ← y esta
-  });
+ document.addEventListener('keydown', (e) => {
+  const active = document.activeElement;
+  if (
+    active &&
+    (
+      active.tagName === 'INPUT' ||
+      active.tagName === 'TEXTAREA' ||
+      active.isContentEditable
+    )
+  ) {
+    return;
+  }
+
+  if (e.key === 'v' || e.key === 'V') this._onModeChange(1);
+  if (e.key === 'b' || e.key === 'B') this._onModeChange(-1);
+  if (e.key === 'f' || e.key === 'F') this._toggleFullscreen();
+  if (e.key === 'h' || e.key === 'H') this._toggleHud();
+});
 
   document.addEventListener('fullscreenchange', () => {
     const btn = this._els.btnFull;
