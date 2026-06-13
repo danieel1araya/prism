@@ -2,7 +2,7 @@
 // All DOM interactions: search, now-playing, mode label,
 // HUD meters, BPM flash, toast, fullscreen.
 
-const SEARCH_PROXY = "https://bold-leaf-c65cprism.danielaraya54151.workers.dev";
+const SEARCH_PROXY = "/api/search";
 
 export class UI {
   constructor({ onSongSelect, onModeChange }) {
