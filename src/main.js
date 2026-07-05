@@ -4,6 +4,7 @@ import { ThreeRenderer }      from './visual/ThreeRenderer.js';
 import { Canvas2DVisualizer } from './visual/Canvas2DVisualizer.js';
 import { UI }                 from './ui/UI.js';
 import { MODES, MODES_2D }    from './shaders/index.js';
+import { damp }               from './util/damp.js';
 
 const bgCanvas   = document.getElementById('bgCanvas');
 const bg2dCanvas = document.getElementById('bg2dCanvas');
@@ -73,23 +74,28 @@ function loop(now) {
   const dt = Math.min((now - lastNow) / 1000, 0.05);
   lastNow  = now;
 
-  audio.tick(now);
-  palette.tick();
+  audio.tick(now, dt);
+  palette.tick(dt);
 
-  audio.flash  = Math.max((audio.flash ?? 0) * .82, audio.bassPulse * (audio.beat ? .9 : .4));
+  audio.flash  = Math.max(
+    damp(audio.flash ?? 0, 0, 11.9, dt),
+    audio.bassPulse * (audio.beat ? .9 : .4),
+    audio.clapPulse * .5,
+    audio.hatPulse * .22,
+  );
   targetSwirl  = 3.5 + audio.energy * 8;
-  swirl       += (targetSwirl - swirl) * .05;
+  swirl        = damp(swirl, targetSwirl, 3.1, dt);
   audio.swirl  = swirl;
 
   const mode = MODES[modeIndex];
   if (mode === 'SCOPE')       canvas2d.drawScope(audio, palette);
-  else if (mode === 'RIPPLE') canvas2d.drawRipple(audio, palette);
-  else                        three.render(time, audio, palette, null);
+  else if (mode === 'RIPPLE') canvas2d.drawRipple(audio, palette, dt);
+  else                        three.render(time, audio, palette, null, dt);
 
-  time += .008 + audio.bassPulse * .08 + audio.energy * .015;
+  time += (0.48 + audio.bassPulse * 4.8 + audio.energy * 0.9) * dt;
 
   canvas2d.drawSpectrum(audio, palette);
-  canvas2d.updateParticles(audio, palette, MODES_2D.has(mode));
+  canvas2d.updateParticles(audio, palette, MODES_2D.has(mode), dt);
 
   ui.updateHUD(audio);
 }

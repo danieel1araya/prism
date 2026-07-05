@@ -15,9 +15,9 @@ export class Palette {
   }
 
   /** Call each frame to interpolate toward target palette */
-  tick() {
+  tick(dt) {
     if (this._mix >= 1) return;
-    this._mix = Math.min(1, this._mix + 0.004);
+    this._mix = Math.min(1, this._mix + 0.24 * dt);
     for (let i = 0; i < 3; i++) {
       this.colors[i] = new THREE.Color(
         this.colors[i].r + (this._target[i].r - this.colors[i].r) * this._mix,

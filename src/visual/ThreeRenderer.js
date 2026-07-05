@@ -81,10 +81,12 @@ export class ThreeRenderer {
   }
 
   /** Update uniforms and render bloom composite */
-  render(time, audio, palette, bloomStr) {
+  render(time, audio, palette, bloomStr, dt = 1 / 60) {
     if (!this.renderer || !this.mesh) return;
 
-    this.crossfade = Math.min(1, this.crossfade + 0.035);
+    // 0.035/frame @60fps ≈ a 0.476s crossfade — expressed as a duration
+    // so it takes the same real time regardless of refresh rate.
+    this.crossfade = Math.min(1, this.crossfade + dt / 0.476);
 
     const u = this.mesh.material.uniforms;
     u.time.value      = time;

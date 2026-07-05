@@ -1,4 +1,5 @@
 import { lerp3 } from './Palette.js';
+import { damp } from '../util/damp.js';
 
 // ── Canvas2DVisualizer ────────────────────────────────────
 // Handles all 2D canvas drawing: particles, scope, ripple, spectrum.
@@ -108,7 +109,7 @@ export class Canvas2DVisualizer {
     ctx.shadowBlur = 0;
   }
 
-  drawRipple(audio, palette) {
+  drawRipple(audio, palette, dt = 1 / 60) {
     const { d2Ctx: ctx, bg2dCanvas: { width: W, height: H } } = this;
     ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.fillRect(0, 0, W, H);
     if (!audio.freqData) return;
@@ -132,10 +133,20 @@ export class Canvas2DVisualizer {
       cg: Math.round(palette.colors[0].g * 255),
       cb: Math.round(palette.colors[0].b * 255),
     });
+    if (audio.clap) {
+      const c = palette.colors[1];
+      this._ripples.push({
+        x: W / 2 + (Math.random() - .5) * W * .5,
+        y: H / 2 + (Math.random() - .5) * H * .5,
+        r: 0, maxR: Math.max(W, H) * .42, alpha: 0.65,
+        cr: Math.round(c.r * 255), cg: Math.round(c.g * 255), cb: Math.round(c.b * 255),
+      });
+    }
 
     for (let i = this._ripples.length - 1; i >= 0; i--) {
       const rp = this._ripples[i];
-      rp.r += 4 + energy * 16; rp.alpha *= 0.94;
+      rp.r += (4 + energy * 16) * 60 * dt;
+      rp.alpha = damp(rp.alpha, 0, 3.7, dt);
       if (rp.r > rp.maxR || rp.alpha < 0.01) { this._ripples.splice(i, 1); continue; }
       ctx.beginPath(); ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2);
       ctx.strokeStyle = `rgba(${rp.cr},${rp.cg},${rp.cb},${rp.alpha})`;
@@ -159,12 +170,12 @@ export class Canvas2DVisualizer {
     }
   }
 
-  updateParticles(audio, palette, is2D) {
+  updateParticles(audio, palette, is2D, dt = 1 / 60) {
     const { pCtx, particleCanvas: { width: W, height: H } } = this;
     pCtx.clearRect(0, 0, W, H);
     if (is2D) return;
 
-    const { beat, energy, anticipate, beatKick } = audio;
+    const { beat, energy, anticipate, beatKick, clap, hat } = audio;
     const cx = innerWidth * .5, cy = innerHeight * .52;
     const spread = innerWidth * .45;
 
@@ -172,6 +183,14 @@ export class Canvas2DVisualizer {
       const burst = IS_MOBILE ? 8 + Math.floor(energy * 6) : 20 + Math.floor(energy * 15);
       for (let i = 0; i < burst && this._parts.length < this._maxParts; i++)
         this._parts.push(this._spawnPart(cx + (Math.random() - .5) * spread * .3, cy + (Math.random() - .5) * innerHeight * .2, true));
+    }
+    if (clap) {
+      const burst = IS_MOBILE ? 5 + Math.floor(energy * 4) : 12 + Math.floor(energy * 8);
+      for (let i = 0; i < burst && this._parts.length < this._maxParts; i++)
+        this._parts.push(this._spawnPart(cx + (Math.random() - .5) * spread * .9, cy + (Math.random() - .5) * innerHeight * .35, true));
+    }
+    if (hat && Math.random() < 0.7 && this._parts.length < this._maxParts) {
+      this._parts.push(this._spawnPart(cx + (Math.random() - .5) * spread * 1.2, cy + (Math.random() - .5) * innerHeight * .5));
     }
     if (anticipate > 0.5 && Math.random() < anticipate * .4)
       for (let i = 0; i < 3 && this._parts.length < this._maxParts; i++)
@@ -182,12 +201,12 @@ export class Canvas2DVisualizer {
 
     for (let i = this._parts.length - 1; i >= 0; i--) {
       const p = this._parts[i];
-      p.life += .011;
+      p.life += .66 * dt;
       if (p.life > p.maxLife) { this._parts.splice(i, 1); continue; }
-      p.vx += (Math.random() - .5) * .08 * (1 + energy * 3);
-      p.vy += -0.012 - energy * .04;
-      p.vx *= 0.982; p.vy *= 0.982;
-      p.x  += p.vx;  p.y  += p.vy;
+      p.vx += (Math.random() - .5) * .08 * (1 + energy * 3) * 60 * dt;
+      p.vy += (-0.012 - energy * .04) * 60 * dt;
+      p.vx = damp(p.vx, 0, 1.09, dt); p.vy = damp(p.vy, 0, 1.09, dt);
+      p.x  += p.vx * 60 * dt;  p.y  += p.vy * 60 * dt;
       const prog  = p.life / p.maxLife;
       const alpha = Math.sin(prog * Math.PI) * (p.glow ? 0.90 : 0.48);
       const c = palette.colors[p.ci];
